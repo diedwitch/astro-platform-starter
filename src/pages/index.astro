@@ -1,19 +1,507 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Markdown from '../components/Markdown.astro';
-
-const explainer = `
-An Astro website can go way beyond static pages - on the right platform.
-
-Netlify supports not only [Streaming SSR](https://docs.astro.build/en/guides/server-side-rendering/#html-streaming) and fast [Edge Middleware](https://docs.astro.build/en/guides/middleware/), but also [on-demand revalidation](https://www.netlify.com/blog/cache-tags-and-purge-api-on-netlify/) and [stale-while-revalidate](https://www.netlify.com/blog/swr-and-fine-grained-cache-control/). 
-Any page or data can be rebuilt only when needed, without site visitors ever getting a performance hit.
-`;
+// hacked by died
 ---
 
-<Layout title="Welcome to Astro.">
-    <h1 class="mb-10">Netlify Platform Starter for Astro</h1>
-    <Markdown content={explainer} class="mb-10 text-lg" />
-    <p>
-        <a href="https://docs.netlify.com/frameworks/astro/" class="btn btn-lg sm:min-w-64">Read the Docs</a>
-    </p>
-</Layout>
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>died</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                background: #0a0a0a;
+                color: #00ff41;
+                font-family: 'Share Tech Mono', 'Courier New', monospace;
+                overflow-x: hidden;
+                min-height: 100vh;
+            }
+
+            /* Scanline overlay */
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: repeating-linear-gradient(
+                    0deg,
+                    rgba(0, 0, 0, 0.15) 0px,
+                    rgba(0, 0, 0, 0.15) 1px,
+                    transparent 1px,
+                    transparent 2px
+                );
+                pointer-events: none;
+                z-index: 9999;
+            }
+
+            /* CRT flicker */
+            body::after {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 255, 65, 0.015);
+                pointer-events: none;
+                z-index: 9998;
+                animation: flicker 0.15s infinite;
+            }
+
+            @keyframes flicker {
+                0% { opacity: 0.27; }
+                5% { opacity: 0.34; }
+                10% { opacity: 0.42; }
+                15% { opacity: 0.28; }
+                20% { opacity: 0.44; }
+                25% { opacity: 0.37; }
+                30% { opacity: 0.29; }
+                35% { opacity: 0.41; }
+                40% { opacity: 0.36; }
+                45% { opacity: 0.27; }
+                50% { opacity: 0.44; }
+                55% { opacity: 0.33; }
+                60% { opacity: 0.38; }
+                65% { opacity: 0.29; }
+                70% { opacity: 0.42; }
+                75% { opacity: 0.36; }
+                80% { opacity: 0.27; }
+                85% { opacity: 0.44; }
+                90% { opacity: 0.31; }
+                95% { opacity: 0.38; }
+                100% { opacity: 0.27; }
+            }
+
+            #matrix-bg {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 0;
+                opacity: 0.12;
+            }
+
+            .container {
+                position: relative;
+                z-index: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                padding: 2rem;
+            }
+
+            .skull-ascii {
+                font-size: 0.5rem;
+                line-height: 0.55rem;
+                letter-spacing: 0.1rem;
+                color: #00ff41;
+                text-shadow: 0 0 10px #00ff41, 0 0 20px #00ff41, 0 0 40px #008f11;
+                white-space: pre;
+                margin-bottom: 2rem;
+                animation: glowPulse 2s ease-in-out infinite;
+                text-align: center;
+            }
+
+            @media (min-width: 640px) {
+                .skull-ascii {
+                    font-size: 0.7rem;
+                    line-height: 0.75rem;
+                }
+            }
+
+            @keyframes glowPulse {
+                0%, 100% {
+                    text-shadow: 0 0 10px #00ff41, 0 0 20px #00ff41, 0 0 40px #008f11;
+                    opacity: 0.9;
+                }
+                50% {
+                    text-shadow: 0 0 20px #00ff41, 0 0 40px #00ff41, 0 0 80px #008f11, 0 0 120px #008f11;
+                    opacity: 1;
+                }
+            }
+
+            .alias {
+                font-size: 3.5rem;
+                font-weight: bold;
+                text-transform: uppercase;
+                letter-spacing: 1.2rem;
+                color: #00ff41;
+                text-shadow: 0 0 10px #00ff41, 0 0 30px #00ff41, 0 0 60px #008f11, 0 0 100px #008f11;
+                margin-bottom: 1rem;
+                animation: textGlitch 4s infinite;
+                text-align: center;
+            }
+
+            @media (min-width: 640px) {
+                .alias {
+                    font-size: 5rem;
+                    letter-spacing: 1.8rem;
+                }
+            }
+
+            @keyframes textGlitch {
+                0%, 92%, 100% {
+                    transform: translate(0);
+                    opacity: 1;
+                }
+                93% {
+                    transform: translate(-5px, 2px);
+                    opacity: 0.8;
+                    color: #ff0040;
+                }
+                94% {
+                    transform: translate(5px, -2px);
+                    opacity: 0.9;
+                    color: #00ff41;
+                }
+                95% {
+                    transform: translate(-3px, 0);
+                    opacity: 0.7;
+                    color: #0ff;
+                }
+                96% {
+                    transform: translate(0);
+                    opacity: 1;
+                    color: #00ff41;
+                }
+            }
+
+            .tagline {
+                font-size: 0.9rem;
+                color: #008f11;
+                letter-spacing: 0.5rem;
+                text-transform: uppercase;
+                margin-bottom: 3rem;
+                text-align: center;
+            }
+
+            .terminal-box {
+                background: rgba(0, 10, 0, 0.85);
+                border: 1px solid #00ff41;
+                border-radius: 4px;
+                padding: 1.5rem;
+                max-width: 600px;
+                width: 100%;
+                margin-bottom: 2rem;
+                box-shadow: 0 0 15px rgba(0, 255, 65, 0.15), inset 0 0 15px rgba(0, 255, 65, 0.05);
+            }
+
+            .terminal-header {
+                display: flex;
+                gap: 6px;
+                margin-bottom: 1rem;
+                padding-bottom: 0.75rem;
+                border-bottom: 1px solid #003b00;
+            }
+
+            .terminal-dot {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+            }
+
+            .terminal-dot.red { background: #ff5f56; }
+            .terminal-dot.yellow { background: #ffbd2e; }
+            .terminal-dot.green { background: #27c93f; }
+
+            .terminal-line {
+                margin-bottom: 0.4rem;
+                font-size: 0.85rem;
+                line-height: 1.5;
+            }
+
+            .prompt {
+                color: #00ff41;
+            }
+
+            .cmd {
+                color: #0ff;
+            }
+
+            .output {
+                color: #008f11;
+            }
+
+            .highlight {
+                color: #ff0040;
+            }
+
+            .cursor {
+                display: inline-block;
+                width: 8px;
+                height: 14px;
+                background: #00ff41;
+                animation: blink 1s step-end infinite;
+                vertical-align: middle;
+                margin-left: 2px;
+            }
+
+            @keyframes blink {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0; }
+            }
+
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1.5rem;
+                max-width: 600px;
+                width: 100%;
+                margin-bottom: 2rem;
+                text-align: center;
+            }
+
+            .stat-item {
+                border: 1px solid #003b00;
+                padding: 1rem;
+                background: rgba(0, 10, 0, 0.5);
+                transition: all 0.3s ease;
+            }
+
+            .stat-item:hover {
+                border-color: #00ff41;
+                box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            }
+
+            .stat-value {
+                font-size: 1.6rem;
+                color: #00ff41;
+                text-shadow: 0 0 10px #00ff41;
+                display: block;
+            }
+
+            .stat-label {
+                font-size: 0.65rem;
+                color: #008f11;
+                text-transform: uppercase;
+                letter-spacing: 0.2rem;
+                margin-top: 0.3rem;
+                display: block;
+            }
+
+            .footer-text {
+                font-size: 0.7rem;
+                color: #003b00;
+                letter-spacing: 0.3rem;
+                text-transform: uppercase;
+                margin-top: 2rem;
+            }
+
+            .glitch-separator {
+                width: 100%;
+                max-width: 600px;
+                height: 1px;
+                background: linear-gradient(90deg, transparent, #00ff41, transparent);
+                margin: 1.5rem 0;
+                position: relative;
+            }
+
+            .glitch-separator::after {
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 1px;
+                background: linear-gradient(90deg, transparent, #ff0040, transparent);
+                animation: separatorGlitch 3s infinite;
+            }
+
+            @keyframes separatorGlitch {
+                0%, 95%, 100% { transform: translateX(0); opacity: 0; }
+                96% { transform: translateX(-10px); opacity: 1; }
+                97% { transform: translateX(10px); opacity: 0.5; }
+                98% { transform: translateX(0); opacity: 0; }
+            }
+
+            /* Typed text animation */
+            .typed-text {
+                overflow: hidden;
+                white-space: nowrap;
+                border-right: none;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="matrix-bg"></canvas>
+
+        <div class="container">
+            <div class="skull-ascii" id="skull">
+      ██████╗ ██╗███████╗██████╗
+      ██╔══██╗██║██╔════╝██╔══██╗
+      ██║  ██║██║█████╗  ██║  ██║
+      ██║  ██║██║██╔══╝  ██║  ██║
+      ██████╔╝██║███████╗██████╔╝
+      ╚═════╝ ╚═╝╚══════╝╚═════╝
+            </div>
+
+            <div class="alias">DIED</div>
+            <div class="tagline">// access granted //</div>
+
+            <div class="glitch-separator"></div>
+
+            <div class="terminal-box">
+                <div class="terminal-header">
+                    <div class="terminal-dot red"></div>
+                    <div class="terminal-dot yellow"></div>
+                    <div class="terminal-dot green"></div>
+                </div>
+                <div class="terminal-line">
+                    <span class="prompt">died@void</span>:<span class="cmd">~$</span> <span class="output">whoami</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="output">→ died</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="prompt">died@void</span>:<span class="cmd">~$</span> <span class="output">cat /etc/motd</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="highlight">⚠ SYSTEM COMPROMISED</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="output">→ we don't break in. we were already inside.</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="prompt">died@void</span>:<span class="cmd">~$</span> <span class="output" id="typed-cmd"></span><span class="cursor"></span>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-value" id="counter-1">0</span>
+                    <span class="stat-label">Exploits</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="counter-2">0</span>
+                    <span class="stat-label">Shells</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="counter-3">0</span>
+                    <span class="stat-label">Targets</span>
+                </div>
+            </div>
+
+            <div class="glitch-separator"></div>
+
+            <div class="footer-text">[ died // 2026 ]</div>
+        </div>
+
+        <script>
+            // Matrix rain background
+            const canvas = document.getElementById('matrix-bg');
+            const ctx = canvas.getContext('2d');
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF{}[]<>/\\|;:died';
+            const fontSize = 14;
+            let columns = Math.floor(canvas.width / fontSize);
+            let drops = Array(columns).fill(1);
+
+            window.addEventListener('resize', () => {
+                columns = Math.floor(canvas.width / fontSize);
+                drops = Array(columns).fill(1);
+            });
+
+            function drawMatrix() {
+                ctx.fillStyle = 'rgba(10, 10, 10, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#00ff41';
+                ctx.font = fontSize + 'px monospace';
+
+                for (let i = 0; i < drops.length; i++) {
+                    const text = chars[Math.floor(Math.random() * chars.length)];
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
+
+            setInterval(drawMatrix, 50);
+
+            // Animated counters
+            function animateCounter(id, target) {
+                const el = document.getElementById(id);
+                let current = 0;
+                const step = Math.ceil(target / 60);
+                const interval = setInterval(() => {
+                    current += step;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(interval);
+                    }
+                    el.textContent = current.toLocaleString();
+                }, 30);
+            }
+
+            setTimeout(() => animateCounter('counter-1', 1437), 500);
+            setTimeout(() => animateCounter('counter-2', 892), 800);
+            setTimeout(() => animateCounter('counter-3', 2104), 1100);
+
+            // Typing effect for last terminal line
+            const commands = [
+                'nmap -sV --script=vuln target',
+                'ssh -i key root@10.0.0.1',
+                'cat /etc/shadow',
+                'python3 exploit.py --payload rev',
+                'curl -s http://died.sh/pwn',
+                'hashcat -m 1000 hashes.txt rockyou',
+                'msfconsole -q -x "use exploit"',
+            ];
+
+            let cmdIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+            const typedEl = document.getElementById('typed-cmd');
+
+            function typeEffect() {
+                const currentCmd = commands[cmdIndex];
+
+                if (!isDeleting) {
+                    typedEl.textContent = currentCmd.substring(0, charIndex + 1);
+                    charIndex++;
+
+                    if (charIndex === currentCmd.length) {
+                        isDeleting = true;
+                        setTimeout(typeEffect, 2000);
+                        return;
+                    }
+                    setTimeout(typeEffect, 50 + Math.random() * 80);
+                } else {
+                    typedEl.textContent = currentCmd.substring(0, charIndex - 1);
+                    charIndex--;
+
+                    if (charIndex === 0) {
+                        isDeleting = false;
+                        cmdIndex = (cmdIndex + 1) % commands.length;
+                        setTimeout(typeEffect, 500);
+                        return;
+                    }
+                    setTimeout(typeEffect, 30);
+                }
+            }
+
+            setTimeout(typeEffect, 1500);
+        </script>
+    </body>
+</html>
